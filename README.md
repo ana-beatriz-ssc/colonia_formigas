@@ -1,15 +1,15 @@
-# UNIVERSIDADE FEDERAL DO PIAUÍ
-## Disciplina: Inteligência Artificial
-### Período letivo: 2026.2
-### Atividade Prática sobre Colônia de Formigas
+# Atividade Prática sobre Colônia de Formigas
+Universidade Federal do Piauí (UFPI)  
+Disciplina: Inteligência Artificial  
+Período letivo: 2026.2
 
 ---
 
 ## 1. Identificação
 Discentes: Ana Beatriz dos Santos Sousa Costa, Késsia Letícia da Silva Lima e Lara Nubia Martins Ribeiro
 
-Link da aplicação no GitHub Pages: `https://ana-beatriz-ssc.github.io/colonia_formigas/`
-Link do repositório no GitHub: `https://github.com/ana-beatriz-ssc/colonia_formigas.git`
+Link da aplicação no GitHub Pages: <https://ana-beatriz-ssc.github.io/colonia_formigas/>  
+Link do repositório no GitHub: <https://github.com/ana-beatriz-ssc/colonia_formigas.git>
 
 ---
 

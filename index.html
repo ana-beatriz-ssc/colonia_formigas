@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Otimização por Colônia de Formigas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- cabecalho superior -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="header-main">
+                <div class="header-badge">UNIVERSIDADE FEDERAL DO PIAUÍ - IA 2026.2</div>
+                <h1 class="header-title">Simulador de Otimização por Colônia de Formigas</h1>
+                <p class="header-subtitle">Roteamento de entregas com depósito utilizando a variante Ant System</p>
+            </div>
+            <div class="header-actions">
+                <a href="https://github.com" target="_blank" id="repo-link" class="btn btn-outline" rel="noopener noreferrer">Repositório no GitHub</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-container" id="simulation-section">
+        <!-- coluna lateral: configuracoes e controles -->
+        <aside class="sidebar">
+            <!-- cenario e predefinicoes -->
+            <section class="card">
+                <div class="card-header">
+                    <h2>Cenários Pré-configurados</h2>
+                </div>
+                <div class="preset-buttons">
+                    <button type="button" id="btn-load-preset-5" class="btn btn-secondary">Cenário Inicial (5 Vértices)</button>
+                    <button type="button" id="btn-load-preset-ref" class="btn btn-secondary">Instância de Teste (4 Vértices A-B-C-D)</button>
+                </div>
+            </section>
+
+            <!-- gerenciamento de vertices -->
+            <section class="card">
+                <div class="card-header">
+                    <h2>Gerenciamento de Vértices</h2>
+                    <span class="badge-counter" id="vertex-count-badge">5 / 12</span>
+                </div>
+                <p class="section-desc">Limite permitido: entre 4 e 12 vértices. Coordenadas de 0 a 1.000 (até duas casas decimais).</p>
+
+                <div class="table-container">
+                    <table class="data-table" id="vertices-table">
+                        <thead>
+                            <tr>
+                                <th>Identificador</th>
+                                <th>X</th>
+                                <th>Y</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vertices-table-body">
+                            <!-- preenchido via javascript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="add-vertex-form">
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="new-vertex-id">Identificador</label>
+                            <input type="text" id="new-vertex-id" maxlength="5" placeholder="Ex: F">
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="new-vertex-x">X (0 a 1.000)</label>
+                            <input type="number" id="new-vertex-x" min="0" max="1000" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="new-vertex-y">Y (0 a 1.000)</label>
+                            <input type="number" id="new-vertex-y" min="0" max="1000" step="0.01" placeholder="0.00">
+                        </div>
+                    </div>
+                    <button type="button" id="btn-add-vertex" class="btn btn-secondary btn-full">Adicionar Vértice</button>
+                </div>
+            </section>
+
+            <!-- parametros e controles -->
+            <section class="card">
+                <div class="card-header">
+                    <h2>Parâmetros do Algoritmo</h2>
+                </div>
+                <form id="parameters-form">
+                    <div class="form-group">
+                        <label for="select-depot">Depósito (origem e retorno)</label>
+                        <select id="select-depot"></select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="input-ants">Formigas (1 a 100)</label>
+                            <input type="number" id="input-ants" min="1" max="100" value="10" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="input-iterations">Iterações (1 a 200)</label>
+                            <input type="number" id="input-iterations" min="1" max="200" value="30" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="input-alpha">Feromônio (α: 0 a 5)</label>
+                            <input type="number" id="input-alpha" min="0" max="5" step="0.1" value="1.0" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="input-beta">Distância (β: 0 a 5)</label>
+                            <input type="number" id="input-beta" min="0" max="5" step="0.1" value="2.0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="input-rho">Evaporação (ρ: 0% a 90%)</label>
+                            <div class="input-with-addon">
+                                <input type="number" id="input-rho" min="0" max="90" step="1" value="50" required>
+                                <span class="addon">%</span>
+                            </div>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="input-tau0">Feromônio inicial (τ₀)</label>
+                            <input type="number" id="input-tau0" min="0.01" max="100" step="0.01" value="1.00" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="input-q">Depósito (Q: 0,01 a 10k)</label>
+                            <input type="number" id="input-q" min="0.01" max="10000" step="0.01" value="14.00" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="input-seed">Semente aleatória</label>
+                            <input type="number" id="input-seed" step="1" value="42" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="range-header">
+                            <label for="input-speed">Velocidade da simulação</label>
+                            <span id="speed-label" class="range-val">300 ms</span>
+                        </div>
+                        <input type="range" id="input-speed" min="50" max="1000" step="50" value="300" class="range-slider">
+                    </div>
+                </form>
+
+                <div id="validation-message" class="validation-message" style="display: none;"></div>
+
+                <div class="controls-panel">
+                    <button type="button" id="btn-run" class="btn btn-primary">Executar</button>
+                    <button type="button" id="btn-pause" class="btn btn-secondary" disabled>Pausar</button>
+                    <button type="button" id="btn-step" class="btn btn-secondary">Avançar uma iteração</button>
+                    <button type="button" id="btn-reset" class="btn btn-danger">Reiniciar</button>
+                </div>
+            </section>
+        </aside>
+
+        <!-- area principal: metricas e grafo -->
+        <section class="main-content">
+            <!-- metricas principais em cards claros -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="metric-title">Iteração Atual</span>
+                    <div class="metric-value-wrap">
+                        <span class="metric-value" id="metric-current-iteration">0</span>
+                        <span class="metric-sub" id="metric-max-iteration">de 30</span>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-title">Menor Distância da Iteração</span>
+                    <span class="metric-value" id="metric-best-iter">ainda não calculada</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-title">Média das Distâncias</span>
+                    <span class="metric-value" id="metric-avg-iter">ainda não calculada</span>
+                </div>
+                <div class="metric-card metric-card-accent">
+                    <span class="metric-title">Melhor Distância Acumulada</span>
+                    <span class="metric-value metric-value-accent" id="metric-best-overall">ainda não calculada</span>
+                </div>
+            </div>
+
+            <!-- visualizacao do grafo -->
+            <div class="card graph-card">
+                <div class="graph-header">
+                    <h2>Representação Visual do Grafo</h2>
+                    <div class="graph-toggles">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="toggle-best-overall" checked>
+                            <span>Melhor rota acumulada</span>
+                        </label>
+                        <label class="toggle-label">
+                            <input type="checkbox" id="toggle-best-iter" checked>
+                            <span>Melhor da iteração</span>
+                        </label>
+                        <label class="toggle-label">
+                            <input type="checkbox" id="toggle-edge-labels">
+                            <span>Rótulos de feromônio</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="graph-canvas-wrapper">
+                    <canvas id="graph-canvas" width="800" height="520"></canvas>
+                </div>
+
+                <!-- legenda e informacoes de escala -->
+                <div class="graph-legend">
+                    <div class="legend-item"><span class="legend-color legend-depot"></span> Depósito</div>
+                    <div class="legend-item"><span class="legend-color legend-vertex"></span> Ponto de Entrega</div>
+                    <div class="legend-item"><span class="legend-color legend-edge"></span> Aresta (feromônio por espessura/opacidade)</div>
+                    <div class="legend-item"><span class="legend-color legend-best-overall"></span> Melhor Rota Acumulada</div>
+                    <div class="legend-item"><span class="legend-color legend-best-iter"></span> Melhor da Iteração</div>
+                </div>
+
+                <div class="scale-info" id="scale-info">
+                    Escala de feromônio atual: [mín: -, máx: -]. Espessura visual mapeada linearmente entre 1px e 6px.
+                </div>
+
+                <!-- painel de consulta e diferenciacao entre distancia e feromonio -->
+                <div class="edge-inspection-panel">
+                    <h3>Consulta de Arestas (Diferenciação: Distância Fixa vs. Feromônio Atual)</h3>
+                    <p class="inspection-desc">Passe o cursor sobre os vértices e arestas no grafo, ou selecione dois vértices para consultar os valores numéricos com precisão:</p>
+                    <div class="form-row edge-query-row">
+                        <div class="form-group flex-1">
+                            <label for="select-edge-u">Vértice de Origem</label>
+                            <select id="select-edge-u"></select>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="select-edge-v">Vértice de Destino</label>
+                            <select id="select-edge-v"></select>
+                        </div>
+                        <div class="edge-query-result" id="edge-query-result">
+                            Selecione dois vértices para consultar.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tour-sequences">
+                    <p><strong>Melhor Rota Acumulada:</strong> <span id="route-best-overall-seq">Nenhuma rota calculada ainda</span></p>
+                    <p><strong>Melhor Rota da Iteração:</strong> <span id="route-best-iter-seq">Nenhuma rota calculada ainda</span></p>
+                </div>
+            </div>
+
+            <!-- paineis expansiveis de detalhamento e transparencia -->
+            <div class="card collapsible-card">
+                <details open>
+                    <summary>Acompanhamento da Construção de Rota (Formiga 1 nesta Iteração)</summary>
+                    <div class="collapsible-content" id="ant-step-log-container">
+                        <p class="hint-text">Inicie a simulação ou avance uma iteração para visualizar a tomada de decisão da Formiga 1 passo a passo (vértice atual, candidatos, pesos w, probabilidades calculadas e vértice sorteado).</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="card collapsible-card">
+                <details>
+                    <summary>Atualização Numérica dos Feromônios por Aresta (Iteração Atual)</summary>
+                    <div class="collapsible-content">
+                        <p class="hint-text">Exibe para cada aresta: feromônio anterior, valor após evaporação, depósito somado de todas as formigas e feromônio final.</p>
+                        <div class="table-container">
+                            <table class="data-table" id="edge-updates-table">
+                                <thead>
+                                    <tr>
+                                        <th>Aresta</th>
+                                        <th>Distância d</th>
+                                        <th>Feromônio Anterior</th>
+                                        <th>Após Evaporação ((1 - ρ) × τ)</th>
+                                        <th>Depósito Total (Σ Δτ)</th>
+                                        <th>Feromônio Final</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="edge-updates-table-body">
+                                    <tr>
+                                        <td colspan="6" class="text-center">Nenhuma iteração concluída ainda.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <div class="card collapsible-card">
+                <details>
+                    <summary>Histórico de Todas as Iterações</summary>
+                    <div class="collapsible-content">
+                        <div class="table-container">
+                            <table class="data-table" id="history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Iteração</th>
+                                        <th>Melhor da Iteração</th>
+                                        <th>Média das Formigas</th>
+                                        <th>Melhor Acumulada</th>
+                                        <th>Sequência da Melhor da Iteração</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-table-body">
+                                    <tr>
+                                        <td colspan="5" class="text-center">Nenhum registro no histórico.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </section>
+    </main>
+
+    <!-- scripts da aplicacao -->
+    <script src="js/prng.js"></script>
+    <script src="js/aco.js"></script>
+    <script src="js/tests.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
